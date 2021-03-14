@@ -34,6 +34,12 @@ def set_logging(args):
 
 def parse_aria2_options(aria2_args):
 	log.debug(f"Parsing global args from: {aria2_args}")
+	for arg in aria2_args:
+		if arg.startswith("-") and not arg.startswith("--"):
+			msg = f"Invalid argument: {arg}\n"
+			msg += "Cannot use short variations of aria2 global args"
+			log.error(msg)
+			exit(1)
 	aria2_parser = configargparse.ArgParser()
 	for option in filter(lambda x: x.startswith("--"), aria2_args):
 		aria2_parser.add(option)
