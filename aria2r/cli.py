@@ -31,9 +31,11 @@ def set_logging(args):
 
 
 def parse_aria2_options(aria2_args):
+	log.debug(f"Parsing global args from: {aria2_args}")
 	aria2_parser = configargparse.ArgParser()
 	for option in filter(lambda x: x.startswith("--"), aria2_args):
 		aria2_parser.add(option)
+		log.debug(f"Found global option: {option}")
 	aria2_dict = vars(aria2_parser.parse_args(aria2_args))
 	return {k.replace("_", "-"): v for k, v in aria2_dict.items()}
 
@@ -55,7 +57,7 @@ def _get_parser():
 
 def main():
 	p = _get_parser()
-	p.add("urls", nargs="*")
+	p.add("-u", "--urls", nargs="*")
 	p.add("-i", "--input_file", help="Path to an aria2c formatted infile")
 	p.add("-d", "--dry-run", default=False)
 	p.add("--host")
@@ -76,10 +78,11 @@ def main():
 		help="a boolean flag.",
 	)
 	config, extra_arguments = p.parse_known_args()
-
 	set_logging(config)
-	downloads = []
+	log.debug(f"aria2r arguments: {pformat(vars(config))}")
 	aria2_options = parse_aria2_options(extra_arguments)
+	log.debug(f"aria2c global arguments: {pformat(aria2_options)}")
+	downloads = []
 	if config.input_file and config.urls:
 		log.error("Error: Must provide url(s) or input file, not both.")
 		exit(1)
@@ -90,8 +93,7 @@ def main():
 		with open(config.input_file) as inputfile:
 			downloads.extend(api.parse(inputfile.read()))
 	downloads = api.add_command_line_options(downloads, aria2_options)
-	log.debug(config)
-	log.info(pformat(downloads))
+	log.info(f"Download json: {pformat(downloads)}")
 
 
 if __name__ == "__main__":
