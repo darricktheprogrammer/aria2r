@@ -1,0 +1,9 @@
+# a file
+https://www.reddit.com/r/devops/comments/b2rf4y/are_you_using_containers_in_production/	https://www.reddit.com/r/devops/comments/b2rf4y/are_you_using_containers_in_production/
+	# some options
+	out=rd_containers-production_b2rf4y.html
+	http-user=packersfan
+	http-passwd=abcd7260&$$()
+
+https://www.reddit.com/r/devops/comments/avozad/is_there_a_way_to_not_use_load_balance_when_using/
+	out=rd_balancing_avozad.html
