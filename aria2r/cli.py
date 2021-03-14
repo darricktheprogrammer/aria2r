@@ -12,6 +12,7 @@ import uuid
 from pathlib import Path
 from pprint import pformat
 
+import requests
 import configargparse
 from xdg import XDG_CONFIG_HOME
 
@@ -90,7 +91,13 @@ def main():
 	p = _get_parser()
 	p.add("-u", "--urls", nargs="*")
 	p.add("-i", "--input_file", help="Path to an aria2c formatted infile")
-	p.add("-d", "--dry-run", default=False)
+	p.add(
+		"-d",
+		"--dry-run",
+		action="store_true",
+		default=False,
+		help="a boolean flag.",
+	)
 	p.add("--host")
 	p.add("--port")
 	p.add("--rpc-secret", default=None, help="secret text.")
@@ -125,7 +132,18 @@ def main():
 	downloads = api.add_command_line_options(downloads, aria2_options)
 	rpc_data = build_rpc_request(downloads)
 	log.debug(f"Download json: {pformat(downloads)}")
-	log.info(f"Making request: {pformat(rpc_data)}")
+	rpc_endpoint = f"http://{args.host}:{args.port}/jsonrpc"
+	if args.dry_run:
+		log.info(
+			f"Dry run. Skipping sending request to running aria2 instance at "
+			f" {rpc_endpoint}:\n{pformat(rpc_data)}"
+		)
+	if not args.dry_run:
+		log.info(
+			f"Sending request to running aria2 instance at "
+			f" {rpc_endpoint}:\n{pformat(rpc_data)}"
+		)
+		requests.post(rpc_endpoint, json=rpc_data)
 
 
 if __name__ == "__main__":
