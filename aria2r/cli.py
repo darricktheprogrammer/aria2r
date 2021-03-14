@@ -87,8 +87,7 @@ def main():
 		log.error("Error: Must provide url(s) or input file, not both.")
 		exit(1)
 	elif config.urls:
-		for url in config.urls:
-			downloads.append({"options": {}, "uris": [url]})
+		downloads.append({"options": {}, "uris": [*config.urls]})
 	elif config.input_file:
 		with open(config.input_file) as inputfile:
 			downloads.extend(api.parse(inputfile.read()))
