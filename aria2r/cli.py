@@ -77,19 +77,19 @@ def main():
 		default=False,
 		help="a boolean flag.",
 	)
-	config, extra_arguments = p.parse_known_args()
-	set_logging(config)
-	log.debug(f"aria2r arguments: {pformat(vars(config))}")
+	args, extra_arguments = p.parse_known_args()
+	set_logging(args)
+	log.debug(f"aria2r arguments: {pformat(vars(args))}")
 	aria2_options = parse_aria2_options(extra_arguments)
 	log.debug(f"aria2c global arguments: {pformat(aria2_options)}")
 	downloads = []
-	if config.input_file and config.urls:
+	if args.input_file and args.urls:
 		log.error("Error: Must provide url(s) or input file, not both.")
 		exit(1)
-	elif config.urls:
-		downloads.append({"options": {}, "uris": [*config.urls]})
-	elif config.input_file:
-		with open(config.input_file) as inputfile:
+	elif args.urls:
+		downloads.append({"options": {}, "uris": [*args.urls]})
+	elif args.input_file:
+		with open(args.input_file) as inputfile:
 			downloads.extend(api.parse(inputfile.read()))
 	downloads = api.add_command_line_options(downloads, aria2_options)
 	log.info(f"Download json: {pformat(downloads)}")
