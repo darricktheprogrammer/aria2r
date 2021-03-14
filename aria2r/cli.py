@@ -8,6 +8,7 @@ of aria2c.
 """
 import logging
 import sys
+import uuid
 from pathlib import Path
 from pprint import pformat
 
@@ -55,6 +56,36 @@ def _get_parser():
 	return p
 
 
+def build_rpc_request(downloads):
+	# Not all parameters for the request are named. The unique portion
+	# (url and options) are sent as a two item list where the first item is a
+	# list of uris and the second item is any options to apply to the download.
+	#
+	# Example:
+	# {
+	# 	"jsonrpc": "2.0",
+	# 	"method": "aria2.addUri",
+	# 	"id": str(uuid.uuid4())[:12],
+	# 	"params": [
+	# 		[{uri1}, {uri2}],
+	# 		{
+	# 			"option1": "value",
+	# 			"option2": "value"
+	# 		}
+	# 	]
+	# }
+	common_payload = {
+		"jsonrpc": "2.0",
+		"method": "aria2.addUri",
+		"id": str(uuid.uuid4())[:8],
+	}
+	return [
+		dict(common_payload, params=[dl["uris"], dl["options"]])
+		for dl in downloads
+	]
+	return downloads
+
+
 def main():
 	p = _get_parser()
 	p.add("-u", "--urls", nargs="*")
@@ -92,7 +123,9 @@ def main():
 		with open(args.input_file) as inputfile:
 			downloads.extend(api.parse(inputfile.read()))
 	downloads = api.add_command_line_options(downloads, aria2_options)
-	log.info(f"Download json: {pformat(downloads)}")
+	rpc_data = build_rpc_request(downloads)
+	log.debug(f"Download json: {pformat(downloads)}")
+	log.info(f"Making request: {pformat(rpc_data)}")
 
 
 if __name__ == "__main__":
