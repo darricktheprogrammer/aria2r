@@ -55,7 +55,8 @@ def _get_parser():
 
 def main():
 	p = _get_parser()
-	p.add("input_file")
+	p.add("urls", nargs="*")
+	p.add("-i", "--input_file", help="Path to an aria2c formatted infile")
 	p.add("-d", "--dry-run", default=False)
 	p.add("--host")
 	p.add("--port")
@@ -77,9 +78,17 @@ def main():
 	config, extra_arguments = p.parse_known_args()
 
 	set_logging(config)
+	downloads = []
 	aria2_options = parse_aria2_options(extra_arguments)
-	with open(config.input_file) as inputfile:
-		downloads = api.parse(inputfile.read())
+	if config.input_file and config.urls:
+		log.error("Error: Must provide url(s) or input file, not both.")
+		exit(1)
+	elif config.urls:
+		for url in config.urls:
+			downloads.append({"options": {}, "uris": [url]})
+	elif config.input_file:
+		with open(config.input_file) as inputfile:
+			downloads.extend(api.parse(inputfile.read()))
 	downloads = api.add_command_line_options(downloads, aria2_options)
 	log.debug(config)
 	log.info(pformat(downloads))
