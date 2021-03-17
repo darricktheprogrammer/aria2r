@@ -99,7 +99,6 @@ def build_rpc_request(downloads, rpc_secret):
 		)
 		for dl in downloads
 	]
-	return downloads
 
 
 def main():
