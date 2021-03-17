@@ -63,7 +63,7 @@ def _get_parser():
 	return p
 
 
-def build_rpc_request(downloads):
+def build_rpc_request(downloads, rpc_secret):
 	# Not all parameters for the request are named. The unique portion
 	# (url and options) are sent as a two item list where the first item is a
 	# list of uris and the second item is any options to apply to the download.
@@ -87,7 +87,10 @@ def build_rpc_request(downloads):
 		"id": str(uuid.uuid4())[:8],
 	}
 	return [
-		dict(common_payload, params=[dl["uris"], dl["options"]])
+		dict(
+			common_payload,
+			params=[f"token:{rpc_secret}", dl["uris"], dl["options"]],
+		)
 		for dl in downloads
 	]
 	return downloads
@@ -106,7 +109,7 @@ def main():
 	)
 	p.add("--host")
 	p.add("--port")
-	p.add("--rpc-secret", default=None, help="secret text.")
+	p.add("--rpc-secret", default='', help="secret text.")
 	p.add_argument(
 		"-v",
 		"--verbose",
@@ -136,7 +139,7 @@ def main():
 		with open(args.input_file) as inputfile:
 			downloads.extend(api.parse(inputfile.read()))
 	downloads = api.add_command_line_options(downloads, aria2_options)
-	rpc_data = build_rpc_request(downloads)
+	rpc_data = build_rpc_request(downloads, args.rpc_secret)
 	log.debug(f"Download json: {pformat(downloads)}")
 	rpc_endpoint = f"http://{args.host}:{args.port}/jsonrpc"
 	if args.dry_run:
@@ -149,7 +152,14 @@ def main():
 			f"Sending request to running aria2 instance at "
 			f" {rpc_endpoint}:\n{pformat(rpc_data)}"
 		)
-		requests.post(rpc_endpoint, json=rpc_data)
+		response = requests.post(rpc_endpoint, json=rpc_data)
+		log.debug(response.json())
+		first_dl = response.json()[0]
+		if "error" in first_dl.keys() and first_dl["error"]["message"] == "Unauthorized":
+			msg = "Error adding downloads\n"
+			msg += "Missing or incorrect rpc secret"
+			log.error(msg)
+			exit(1)
 
 
 if __name__ == "__main__":
