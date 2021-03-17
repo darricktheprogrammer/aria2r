@@ -81,14 +81,20 @@ def build_rpc_request(downloads, rpc_secret):
 	# 		}
 	# 	]
 	# }
+
+	# The id below is not aria2 specific, but is part of the [json rpc
+	# specification](https://www.jsonrpc.org/specification). Each request
+	# object must have a unique identifier. This is only used during the
+	# initial request. Aria2 will provide a gid for each download, which is
+	# separate from the request id.
 	common_payload = {
 		"jsonrpc": "2.0",
 		"method": "aria2.addUri",
-		"id": str(uuid.uuid4())[:8],
 	}
 	return [
 		dict(
 			common_payload,
+			id=str(uuid.uuid4()),
 			params=[f"token:{rpc_secret}", dl["uris"], dl["options"]],
 		)
 		for dl in downloads
