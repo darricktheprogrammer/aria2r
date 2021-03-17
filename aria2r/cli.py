@@ -114,7 +114,7 @@ def main():
 	)
 	p.add("--host")
 	p.add("--port")
-	p.add("--rpc-secret", default='', help="secret text.")
+	p.add("--rpc-secret", default="", help="secret text.")
 	p.add_argument(
 		"-v",
 		"--verbose",
@@ -160,7 +160,10 @@ def main():
 		response = requests.post(rpc_endpoint, json=rpc_data)
 		log.debug(response.json())
 		first_dl = response.json()[0]
-		if "error" in first_dl.keys() and first_dl["error"]["message"] == "Unauthorized":
+		if (
+			"error" in first_dl.keys()
+			and first_dl["error"]["message"] == "Unauthorized"
+		):
 			msg = "Error adding downloads\n"
 			msg += "Missing or incorrect rpc secret"
 			log.error(msg)
