@@ -33,7 +33,6 @@ def set_logging(args):
 
 
 def parse_aria2_options(aria2_args):
-	log.debug(f"Parsing global args from: {aria2_args}")
 	for arg in aria2_args:
 		if arg.startswith("-") and not arg.startswith("--"):
 			msg = f"Invalid argument: {arg}\n"
@@ -133,7 +132,7 @@ def main():
 	set_logging(args)
 	log.debug(f"aria2r arguments: {pformat(vars(args))}")
 	aria2_options = parse_aria2_options(extra_arguments)
-	log.debug(f"aria2c global arguments: {pformat(aria2_options)}")
+	log.debug(f"aria2c arguments: {pformat(aria2_options)}")
 	downloads = []
 	if args.input_file and args.urls:
 		log.error("Error: Must provide url(s) or input file, not both.")
@@ -145,20 +144,20 @@ def main():
 			downloads.extend(api.parse(inputfile.read()))
 	downloads = api.add_command_line_options(downloads, aria2_options)
 	rpc_data = build_rpc_request(downloads, args.rpc_secret)
-	log.debug(f"Download json: {pformat(downloads)}")
+	log.debug(f"Parsed from input file:\n{pformat(downloads)}")
 	rpc_endpoint = f"http://{args.host}:{args.port}/jsonrpc"
 	if args.dry_run:
-		log.info(
-			f"Dry run. Skipping sending request to running aria2 instance at "
-			f" {rpc_endpoint}:\n{pformat(rpc_data)}"
-		)
-	if not args.dry_run:
-		log.info(
-			f"Sending request to running aria2 instance at "
-			f" {rpc_endpoint}:\n{pformat(rpc_data)}"
-		)
+		msg = f"Dry run. Skip sending request to aria2 instance at {rpc_endpoint}..."
+		log.info(msg)
+		msg = f"data sent:\n{pformat(rpc_data)}"
+		log.debug(msg)
+	else:
+		msg = f"Sending request to aria2 instance at {rpc_endpoint}..."
+		log.info(msg)
+		msg = f"data sent:\n{pformat(rpc_data)}"
+		log.debug(msg)
 		response = requests.post(rpc_endpoint, json=rpc_data)
-		log.debug(response.json())
+		log.debug(f"response:\n{pformat(response.json())}")
 		first_dl = response.json()[0]
 		if (
 			"error" in first_dl.keys()
