@@ -62,6 +62,19 @@ def _get_parser():
 	return p
 
 
+def load_downloads(args, global_options):
+	downloads = []
+	if args.input_file and args.urls:
+		log.error("Error: Must provide url(s) or input file, not both.")
+		exit(1)
+	elif args.urls:
+		downloads.append({"options": {}, "uris": [*args.urls]})
+	elif args.input_file:
+		with open(args.input_file) as inputfile:
+			downloads.extend(api.parse_input_file(inputfile.read()))
+	return api.add_command_line_options(downloads, global_options)
+
+
 def build_rpc_request(downloads, rpc_secret):
 	# Not all parameters for the request are named. The unique portion
 	# (url and options) are sent as a two item list where the first item is a
@@ -161,16 +174,7 @@ def main():
 	log.debug(f"aria2r arguments: {pformat(vars(args))}")
 	aria2_options = parse_aria2_options(extra_arguments)
 	log.debug(f"aria2c arguments: {pformat(aria2_options)}")
-	downloads = []
-	if args.input_file and args.urls:
-		log.error("Error: Must provide url(s) or input file, not both.")
-		exit(1)
-	elif args.urls:
-		downloads.append({"options": {}, "uris": [*args.urls]})
-	elif args.input_file:
-		with open(args.input_file) as inputfile:
-			downloads.extend(api.parse_input_file(inputfile.read()))
-	downloads = api.add_command_line_options(downloads, aria2_options)
+	downloads = load_downloads(args, aria2_options)
 	rpc_data = build_rpc_request(downloads, args.rpc_secret)
 	log.debug(f"Parsed from input file:\n{pformat(downloads)}")
 	rpc_endpoint = f"http://{args.host}:{args.port}/jsonrpc"
