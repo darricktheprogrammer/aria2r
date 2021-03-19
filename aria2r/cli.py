@@ -6,17 +6,18 @@ Given an INPUT_FILE in the same format as aria2c input files, aria2r will
 use the jsonrpc api to add the downloads (with options) to a running instance
 of aria2c.
 """
+import re
+import configparser
 import logging
 import sys
 import uuid
 from pathlib import Path
 from pprint import pformat
+from typing import List
 
 import requests
 import configargparse
 from xdg import XDG_CONFIG_HOME
-
-from aria2r import api
 
 
 logging.basicConfig(
@@ -47,6 +48,30 @@ def parse_aria2_options(aria2_args):
 	return {k.replace("_", "-"): v for k, v in aria2_dict.items()}
 
 
+def parse_input_file(text: str) -> List[dict]:
+	uris = re.findall(r"^[^(\s?#|$)].*", text, re.M)
+	for uri in uris:
+		text = text.replace(uri, f"[{uri}]")
+	parser = configparser.ConfigParser()
+	parser.read_string(text)
+	return [
+		{"uris": uris.split("\t"), "options": dict(parser[uris])}
+		for uris in parser.sections()
+	]
+
+
+def format_as_input_file_entry(download: dict) -> str:
+	uris = "\t".join(download["uris"])
+	options = "\n".join([f"\t{k}={v}" for k, v in download["options"].items()])
+	return "\n".join([uris, options])
+
+
+def add_command_line_options(downloads: List[dict], options: dict):
+	for download in downloads:
+		download["options"].update(options)
+	return downloads
+
+
 def _get_parser():
 	config_files = [
 		str(Path(__file__).resolve().parent / "defaults.conf"),
@@ -74,8 +99,8 @@ def load_downloads(args, global_options):
 		downloads.append({"options": {}, "uris": [*args.urls]})
 	elif args.input_file:
 		with open(args.input_file) as inputfile:
-			downloads.extend(api.parse_input_file(inputfile.read()))
-	return api.add_command_line_options(downloads, global_options)
+			downloads.extend(parse_input_file(inputfile.read()))
+	return add_command_line_options(downloads, global_options)
 
 
 def build_rpc_request(downloads, rpc_secret):
@@ -133,7 +158,7 @@ def handle_response(response, downloads):
 		download_id = err_response["id"]
 		failed_download = dl_lookup[download_id]
 		uris, options = failed_download
-		formatted = api.format_as_input_file_entry(
+		formatted = format_as_input_file_entry(
 			{"uris": uris, "options": options}
 		)
 		errmsg = err_response["error"]["message"]
