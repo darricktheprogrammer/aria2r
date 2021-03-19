@@ -104,9 +104,10 @@ def load_downloads(args, global_options):
 
 
 def build_rpc_request(downloads, rpc_secret):
-	# Not all parameters for the request are named. The unique portion
-	# (url and options) are sent as a two item list where the first item is a
-	# list of uris and the second item is any options to apply to the download.
+	# Not all parameters for the request are named. The unique portion (url and
+	# options) are sent as a list of arguments, along with the secret token.
+	# The entire `params` entry is a three item list of the format:
+	# [<secret token>, <list of urls>, <dictionary of options>]
 	#
 	# Example:
 	# {
@@ -114,6 +115,7 @@ def build_rpc_request(downloads, rpc_secret):
 	# 	"method": "aria2.addUri",
 	# 	"id": str(uuid.uuid4())[:12],
 	# 	"params": [
+	# 		"token:secret",
 	# 		[{uri1}, {uri2}],
 	# 		{
 	# 			"option1": "value",
@@ -122,11 +124,11 @@ def build_rpc_request(downloads, rpc_secret):
 	# 	]
 	# }
 
-	# The id below is not aria2 specific, but is part of the [json rpc
+	# The id is not aria2 specific, but is part of the [json rpc
 	# specification](https://www.jsonrpc.org/specification). Each request
-	# object must have a unique identifier. This is only used during the
-	# initial request. Aria2 will provide a gid for each download, which is
-	# separate from the request id.
+	# object must have a unique identifier. This is used to tie together the
+	# request and response objects. Aria2 will provide a gid for each download,
+	# which is separate from the request id.
 	common_payload = {
 		"jsonrpc": "2.0",
 		"method": "aria2.addUri",
