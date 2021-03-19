@@ -100,6 +100,32 @@ def build_rpc_request(downloads, rpc_secret):
 	]
 
 
+def handle_response(response, downloads):
+	# If secret is wrong for the first download, it will be wrong for all of
+	# them. Fail early with a meaningful message.
+	first_dl_err = response[0].get("error", {}).get("message", None)
+	if first_dl_err == "Unauthorized":
+		msg = "Error adding downloads\nMissing or incorrect rpc secret"
+		log.error(msg)
+		exit(1)
+
+	# aria2r will not check all possible error messages. If an error is caused
+	# due to aria2c-specific issues, alert the user using the returned code.
+	dl_lookup = {dl["id"]: dl["params"][1:] for dl in downloads}
+	failed_downloads = [dl for dl in response if "error" in dl.keys()]
+	for err_response in failed_downloads:
+		download_id = err_response["id"]
+		failed_download = dl_lookup[download_id]
+		uris, options = failed_download
+		formatted = api.dict_to_input_file({"uris": uris, "options": options})
+		errmsg = err_response["error"]["message"]
+		msg = f"\nDownload error\n"
+		msg += f"--------------\n"
+		msg += f"message: '{errmsg}'\n"
+		msg += f"{formatted}\n"
+		log.error(msg)
+
+
 def main():
 	p = _get_parser()
 	p.add("-u", "--urls", nargs="*")
@@ -158,15 +184,7 @@ def main():
 		log.debug(msg)
 		response = requests.post(rpc_endpoint, json=rpc_data)
 		log.debug(f"response:\n{pformat(response.json())}")
-		first_dl = response.json()[0]
-		if (
-			"error" in first_dl.keys()
-			and first_dl["error"]["message"] == "Unauthorized"
-		):
-			msg = "Error adding downloads\n"
-			msg += "Missing or incorrect rpc secret"
-			log.error(msg)
-			exit(1)
+		handle_response(response.json(), rpc_data)
 
 
 if __name__ == "__main__":

@@ -20,6 +20,12 @@ def parse(text: str) -> List[dict]:
 	]
 
 
+def dict_to_input_file(download):
+	uris = "\n".join(download["uris"])
+	options = "\n".join([f"\t{k}={v}" for k, v in download["options"].items()])
+	return "\n".join([uris, options])
+
+
 def add_command_line_options(downloads: List[dict], options: dict):
 	for download in downloads:
 		download["options"].update(options)
