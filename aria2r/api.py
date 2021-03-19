@@ -21,7 +21,7 @@ def parse_input_file(text: str) -> List[dict]:
 
 
 def format_as_input_file_entry(download: dict) -> str:
-	uris = "\n".join(download["uris"])
+	uris = "\t".join(download["uris"])
 	options = "\n".join([f"\t{k}={v}" for k, v in download["options"].items()])
 	return "\n".join([uris, options])
 
