@@ -22,7 +22,7 @@ https://www.reddit.com/r/devops/comments/avozad/is_there_a_way_to_not_use_load_b
 
 
 def test_aria2r_GivenConfig_ReturnsParsedConfig(sample_infile):
-	downloads = api.parse(sample_infile)
+	downloads = api.parse_input_file(sample_infile)
 	assert len(downloads) == 2
 	assert len(downloads[0]["uris"]) == 2
 	assert len(downloads[1]["uris"]) == 1
@@ -38,12 +38,12 @@ def test_aria2r_GivenEqualSignAsOptionValue_ReturnsCorrectValue():
 https://www.reddit.com/r/devops/comments/avozad/is_there_a_way_to_not_use_load_balance_when_using/
 	http-passwd=abcd7260&$$=()
 """
-	downloads = api.parse(sample_infile)
+	downloads = api.parse_input_file(sample_infile)
 	assert downloads[0]["options"]["http-passwd"] == "abcd7260&$$=()"
 
 
 def test_aria2r_GivenCommandLineOptions_OptionsAreAddedToDownloadOptions(sample_infile):
-	downloads = api.parse(sample_infile)
+	downloads = api.parse_input_file(sample_infile)
 	aria2_options = {"timeout": "60"}
 	downloads_final = api.add_command_line_options(downloads, aria2_options)
 	assert "timeout" in downloads_final[0]["options"]

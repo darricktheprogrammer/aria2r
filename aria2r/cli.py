@@ -117,7 +117,9 @@ def handle_response(response, downloads):
 		download_id = err_response["id"]
 		failed_download = dl_lookup[download_id]
 		uris, options = failed_download
-		formatted = api.dict_to_input_file({"uris": uris, "options": options})
+		formatted = api.format_as_input_file_entry(
+			{"uris": uris, "options": options}
+		)
 		errmsg = err_response["error"]["message"]
 		msg = f"\nDownload error\n"
 		msg += f"--------------\n"
@@ -167,7 +169,7 @@ def main():
 		downloads.append({"options": {}, "uris": [*args.urls]})
 	elif args.input_file:
 		with open(args.input_file) as inputfile:
-			downloads.extend(api.parse(inputfile.read()))
+			downloads.extend(api.parse_input_file(inputfile.read()))
 	downloads = api.add_command_line_options(downloads, aria2_options)
 	rpc_data = build_rpc_request(downloads, args.rpc_secret)
 	log.debug(f"Parsed from input file:\n{pformat(downloads)}")

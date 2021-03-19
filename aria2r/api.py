@@ -8,7 +8,7 @@ import configparser
 from typing import List
 
 
-def parse(text: str) -> List[dict]:
+def parse_input_file(text: str) -> List[dict]:
 	uris = re.findall(r"^[^(\s?#|$)].*", text, re.M)
 	for uri in uris:
 		text = text.replace(uri, f"[{uri}]")
@@ -20,7 +20,7 @@ def parse(text: str) -> List[dict]:
 	]
 
 
-def dict_to_input_file(download):
+def format_as_input_file_entry(download: dict) -> str:
 	uris = "\n".join(download["uris"])
 	options = "\n".join([f"\t{k}={v}" for k, v in download["options"].items()])
 	return "\n".join([uris, options])
