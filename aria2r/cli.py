@@ -67,6 +67,9 @@ def load_downloads(args, global_options):
 	if args.input_file and args.urls:
 		log.error("Error: Must provide url(s) or input file, not both.")
 		exit(1)
+	elif not (args.input_file or args.urls):
+		log.error("Error: Must provide one of: url (-u) or input file (-i).")
+		exit(1)
 	elif args.urls:
 		downloads.append({"options": {}, "uris": [*args.urls]})
 	elif args.input_file:
