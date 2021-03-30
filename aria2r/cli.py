@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Add downloads from a file to a running instance of aria2c
+Add downloads to a running instance of aria2c.
 
-Given an INPUT_FILE in the same format as aria2c input files, aria2r will
-use the jsonrpc api to add the downloads (with options) to a running instance
-of aria2c.
+Given one or more URLS (or an INPUT_FILE in the same format as aria2c input
+files), aria2r will use aria2's RPC interface to add the downloads (with
+options) to a running instance of aria2c. It is mandatory to supply either the
+URLS or INPUT_FILE argument, but it is an error to provide both.
 """
 import re
 import configparser
@@ -81,9 +82,7 @@ def _get_parser():
 		description=__doc__,
 		add_config_file_help=False,
 		default_config_files=config_files,
-		formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
 	)
-	p.add("-c", "--config", is_config_file=True, help="config file path")
 	return p
 
 
@@ -93,7 +92,11 @@ def load_downloads(args, global_options):
 		log.error("Error: Must provide url(s) or input file, not both.")
 		exit(1)
 	elif not (args.input_file or args.urls):
-		log.error("Error: Must provide one of: url (-u) or input file (-i).")
+		msg = (
+			"Error: Must provide one of: url (-u, --urls) or input file"
+			" (-i, --input_file)."
+		)
+		log.error(msg)
 		exit(1)
 	elif args.urls:
 		downloads.append({"options": {}, "uris": [*args.urls]})
@@ -170,31 +173,49 @@ def handle_response(response, downloads):
 
 def main():
 	p = _get_parser()
-	p.add("-u", "--urls", nargs="*")
-	p.add("-i", "--input_file", help="Path to an aria2c formatted infile")
+	p.add(
+		"-c", "--config", is_config_file=True, help="config file path",
+	)
+	p.add(
+		"-u",
+		"--urls",
+		nargs="*",
+		help="One or more urls to a file. All given urls must be mirrors to"
+		" the same file and be http/https protocol. Torrent, Magnet, and"
+		" Metalink files are not supported.",
+	)
+	p.add("-i", "--input_file", help="Path to an aria2c formatted input file")
 	p.add(
 		"-d",
 		"--dry-run",
 		action="store_true",
 		default=False,
-		help="a boolean flag.",
+		help="Read the input file or urls and build the request, but don't"
+		" send it to the aria2 instance.",
 	)
-	p.add("--host")
-	p.add("--port")
-	p.add("--rpc-secret", default="", help="secret text.")
+	p.add(
+		"--host",
+		help="The ip or address where aria2 is located. (Default: localhost)",
+	)
+	p.add("--port", help="The port that aria2 listens on. (Default: 8600)")
+	p.add(
+		"--rpc-secret",
+		default="",
+		help="Secret authorization token set for the aria2 rpc interface.",
+	)
 	p.add_argument(
 		"-v",
 		"--verbose",
 		action="store_true",
 		default=False,
-		help="a boolean flag.",
+		help="Increase level of output.",
 	)
 	p.add_argument(
 		"-q",
 		"--quiet",
 		action="store_true",
 		default=False,
-		help="a boolean flag.",
+		help="Decrease level of output.",
 	)
 	args, extra_arguments = p.parse_known_args()
 	set_logging(args)
