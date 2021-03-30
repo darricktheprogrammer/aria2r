@@ -34,7 +34,7 @@ def set_logging(args):
 		log.setLevel(logging.WARN)
 
 
-def parse_aria2_options(aria2_args):
+def parse_aria2_options(aria2_args: list) -> dict:
 	for arg in aria2_args:
 		if arg.startswith("-") and not arg.startswith("--"):
 			msg = f"Invalid argument: {arg}\n"
@@ -86,7 +86,9 @@ def _get_parser():
 	return p
 
 
-def load_downloads(args, global_options):
+def load_downloads(
+	args: configargparse.ArgumentParser, global_options: dict
+) -> list:
 	downloads = []
 	if args.input_file and args.urls:
 		log.error("Error: Must provide url(s) or input file, not both.")
@@ -106,7 +108,7 @@ def load_downloads(args, global_options):
 	return add_command_line_options(downloads, global_options)
 
 
-def build_rpc_request(downloads, rpc_secret):
+def build_rpc_request(downloads: List[dict], rpc_secret: str) -> List[dict]:
 	# Not all parameters for the request are named. The unique portion (url and
 	# options) are sent as a list of arguments, along with the secret token.
 	# The entire `params` entry is a three item list of the format:
@@ -143,7 +145,7 @@ def build_rpc_request(downloads, rpc_secret):
 	]
 
 
-def handle_response(response, downloads):
+def handle_response(response: dict, downloads: list) -> None:
 	# If secret is wrong for the first download, it will be wrong for all of
 	# them. Fail early with a meaningful message.
 	first_dl_err = response[0].get("error", {}).get("message", None)
