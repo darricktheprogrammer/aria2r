@@ -30,6 +30,7 @@ Temporary Items
 # Distribution / packaging
 .Python
 env/
+_build/
 build/
 develop-eggs/
 dist/

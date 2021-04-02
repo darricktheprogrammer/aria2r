@@ -1,3 +1,12 @@
+:::{toctree}
+------------
+	hidden:
+------------
+Overview <self>
+options
+configuration
+:::
+
 aria2r
 ==========
 
