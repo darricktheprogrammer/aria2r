@@ -197,7 +197,8 @@ def main():
 	)
 	p.add(
 		"--host",
-		help="The ip or address where aria2 is located. (Default: localhost)",
+		help="The ip or fully qualified domain name where aria2 is located."
+		" (Default: localhost)",
 	)
 	p.add("--port", help="The port that aria2 listens on. (Default: 8600)")
 	p.add(

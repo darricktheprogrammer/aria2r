@@ -57,8 +57,8 @@ Add downloads to a remote server listening on a non-default port through an [ari
 	                        Path to an aria2c formatted input file
 	  -d, --dry-run         Read the input file or urls and build the request, but
 	                        don't send it to the aria2 instance.
-	  --host HOST           The ip or address where aria2 is located. (Default:
-	                        localhost)
+	  --host HOST           The ip or fully qualified domain name where aria2 is
+	                        located. (Default: localhost)
 	  --port PORT           The port that aria2 listens on. (Default: 8600)
 	  --rpc-secret RPC_SECRET
 	                        Secret authorization token set for the aria2 rpc
