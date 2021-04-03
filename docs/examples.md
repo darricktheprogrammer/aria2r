@@ -17,5 +17,5 @@ aria2r -i "/path/to/input-file.txt" --http-user "username" --http-passwd 'pa$$wo
 Providing a config file in an alternate location
 
 ```bash
-ari2r -c "~/myconfigs/aria2r.conf" "http://host/file.zip"
+aria2r -c "~/myconfigs/aria2r.conf" "http://host/file.zip"
 ```
