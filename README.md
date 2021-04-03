@@ -29,12 +29,16 @@ Basic example of adding a single download for aria2 running on the same machine
 
 Download a file from 2 mirrors
 
-	aria2r --urls "http://host/file.zip" "http://mirror/file.zip"
+	aria2r -u "http://host/file.zip" "http://mirror/file.zip"
 
 
-Add downloads to a remote server listening on a non-default port through an [aria2 input file][3]
+Add downloads to a remote server listening on a non-default port
 
-	aria2r -i /path/to/input-file.txt --host 10.0.0.1 --port 8660
+	aria2r --host 10.0.0.1 --port 8660 "http://host/file.zip"
+
+Add multiple downloads through an [aria2 input file](https://aria2.github.io/manual/en/html/aria2c.html#input-file)
+
+	aria2r -i /path/to/input-file.txt
 
 ## Command Line Options
 
@@ -80,5 +84,4 @@ Add downloads to a remote server listening on a non-default port through an [ari
 
 [1]: https://aria2.github.io/
 [2]: https://github.com/pawamoy/aria2p
-[3]: https://aria2.github.io/manual/en/html/aria2c.html#input-file
 [4]: https://aria2r.readthedocs.io/en/latest/
