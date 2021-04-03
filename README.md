@@ -81,4 +81,4 @@ Add downloads to a remote server listening on a non-default port through an [ari
 [1]: https://aria2.github.io/
 [2]: https://github.com/pawamoy/aria2p
 [3]: https://aria2.github.io/manual/en/html/aria2c.html#input-file
-[4]: #
+[4]: https://aria2r.readthedocs.io/en/latest/
