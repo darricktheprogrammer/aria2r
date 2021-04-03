@@ -24,12 +24,12 @@ aria2r is written in Python and hosted on PyPi, and can be installed through pip
 
 Basic example of adding a single download for aria2 running on the same machine
 
-	aria2r --urls https://raw.githubusercontent.com/darricktheprogrammer/aria2r/master/README.md
+	aria2r --urls "http://host/file.zip"
 
 
 Download a file from 2 mirrors
 
-	aria2r --urls https://raw1.githubusercontent.com/darricktheprogrammer/aria2r/master/README.md https://raw2.githubusercontent.com/darricktheprogrammer/aria2r/master/README.md
+	aria2r --urls "http://host/file.zip" "http://mirror/file.zip"
 
 
 Add downloads to a remote server listening on a non-default port through an [aria2 input file][3]
