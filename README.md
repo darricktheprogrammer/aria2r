@@ -49,32 +49,32 @@ Add downloads to a remote server listening on a non-default port through an [ari
 
 	optional arguments:
 	  -h, --help            show this help message and exit
-	  
+
 	  -c CONFIG, --config CONFIG
 	                        config file path
-	                        
+
 	  -u [URLS [URLS ...]], --urls [URLS [URLS ...]]
 	                        One or more urls to a file. All given urls must be
 	                        mirrors to the same file and be http/https protocol.
 	                        Torrent, Magnet, and Metalink files are not supported.
-	                        
+
 	  -i INPUT_FILE, --input_file INPUT_FILE
 	                        Path to an aria2c formatted input file
-	                        
+
 	  -d, --dry-run         Read the input file or urls and build the request, but
 	                        don't send it to the aria2 instance.
-	                        
+
 	  --host HOST           The ip or fully qualified domain name where aria2 is
 	                        located. (Default: localhost)
-	                        
+
 	  --port PORT           The port that aria2 listens on. (Default: 8600)
-	  
+
 	  --rpc-secret RPC_SECRET
 	                        Secret authorization token set for the aria2 rpc
 	                        interface.
-	                        
+
 	  -v, --verbose         Increase level of output.
-	  
+
 	  -q, --quiet           Decrease level of output.
 
 
