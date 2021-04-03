@@ -16,7 +16,7 @@ One or more urls to a file. All given urls must be mirrors to the same file and 
 
 You do not need to specify this flag more than one time. For multiple mirrors, you can add as many urls after the argument as you like, each separated with a space.
 
-:::{important}
+:::{warning}
 It is mandatory to supply either the `--urls` or `--input_file` argument, but it is an error to provide both.
 :::
 
@@ -28,14 +28,13 @@ The `-u` flag is a tradeoff for the ability to [use all of the options][2] avail
 ::::
 
 
-:::{option} -i , --input_file <input_file>
+::::{option} -i , --input_file <input_file>
 
 Path to an [aria2c formatted input file][4]. Use this to add multiple downloads.
-:::
 
-:::{important}
+:::{warning}
 It is mandatory to supply either the `--urls` or `--input_file` argument, but it is an error to provide both.
-:::
+::::
 
 
 :::{option} -d, --dry-run

@@ -51,6 +51,8 @@ html_theme = 'alabaster'
 
 html_theme_options = {
 	'description': 'Add downloads to a running aria2 instance',
+	'warn_bg': '#ebdada',
+	'warn_border': '#ebdada',
 }
 
 
