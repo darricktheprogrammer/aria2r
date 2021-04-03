@@ -3,19 +3,16 @@ aria2r
 
 In the spirit of [aria2c][1] and [aria2p][2], aria2r is a command line utility to add downloads to a (r)emote, or (r)unning instance of aria2.
 
-While aria2 is a great download manager, one of its biggest drawbacks is the inability to easily add additional downloads once it is started. While it is possible to add downloads through one of the several available GUIs, you are limited to adding and setting options for each download manually, one at a time.
+While aria2 is a great download manager, one of its biggest drawbacks is the inability to easily add additional downloads when run as a daemon. While it is possible to add downloads through one of the several available GUIs, you are limited to adding one download at a time, and scrolling through seemingly endless options to find the ones you want to change.
 
-For more information, [see the full documentation][4].
+The goal of aria2r is to provide a familiar interface for quickly and easily adding a single or multiple downloads to aria2 without having to restart the service. As much as possible, aria2r strives to match the interface, design, and verbiage used by aria2c. Any notable divergences come with an explanation behind the decision.
 
-
-## Philosophy
-
-The goal of aria2r is to provide a familiar interface for quickly and easily adding as many downloads as you'd like. As much as possible, aria2r strives to match the interface, design, and verbiage used by aria2c. Any notable divergences come with an explanation behind the decision.
+[Full documentation][4].
 
 
 ## Installation
 
-aria2r is written in Python and hosted on PyPi, and can be installed through pip.
+aria2r is written in Python and can be installed through pip.
 
 ```bash
 pip install aria2r --user
@@ -24,7 +21,7 @@ pip install aria2r --user
 
 ## Examples
 
-Basic example of adding a single download for aria2 running on the same machine
+Basic example of adding a single download to aria2 running on the same machine
 
 ```bash
 aria2r --urls "http://host/file.zip"
