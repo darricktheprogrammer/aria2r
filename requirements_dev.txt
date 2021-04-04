@@ -1,3 +1,4 @@
 pytest
 sphinx
 myst-parser
+bump2version

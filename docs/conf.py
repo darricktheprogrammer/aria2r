@@ -13,7 +13,6 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-from aria2r import __version__ as version
 
 
 # -- Project information -----------------------------------------------------
